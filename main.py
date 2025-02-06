@@ -15,8 +15,9 @@ pygame.init()
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Flappy Bird")
 bg_day = pygame.image.load("assets/background-day.png")
-bird = pygame.image.load("assets/bluebird-midflap.png").convert()
-
+bird_midflap = pygame.image.load("assets/bluebird-midflap.png").convert()
+bird_downflap = pygame.image.load("assets/bluebird-downflap.png").convert()
+bird_upflap = pygame.image.load("assets/bluebird-upflap.png").convert()
 
 
 clock = pygame.time.Clock()
@@ -29,15 +30,22 @@ while True:
             pygame.quit()
             sys.exit()
     
+    
+    screen.blit(bg_day, (0, 0))  
+    screen.blit(bird_upflap, (center_x, center_y))
+    
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_w]: center_y -= 5
-    if keys[pygame.K_s]: center_y += 5
+    if keys[pygame.K_w]:
+        center_y -= 5 
+        screen.blit(bird_midflap, (center_x, center_y))
+        screen.blit(bird_downflap, (center_x, center_y))
+    if keys[pygame.K_s]:
+        center_y += 5
     if keys[pygame.K_a]: center_x -= 5
     if keys[pygame.K_d]: center_x += 5
-            
-            
-    screen.blit(bird, (100, 100))
-    screen.blit(bg_day, (0, 0))  
+    
+    
+    
     clock.tick(60)
     # pygame.draw.circle(screen, circle_color, (center_x, center_y), radius)
     pygame.display.update()
