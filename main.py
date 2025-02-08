@@ -53,6 +53,10 @@ mixer.music.set_volume(0.2)
 gravity = 0.25
 bird_movement = 0
 
+
+score = 0
+
+
 clock = pygame.time.Clock()
 
 # game over
@@ -103,11 +107,12 @@ while True:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+
+            if keys[pygame.K_SPACE]:
                 anotherScreen = False
                 isPlaying = True
-               
+                score = 0
+
         # Draw game over screen
         game_over_rect.center = screen.get_rect().center
         screen.blit(game_over, game_over_rect)
@@ -120,5 +125,14 @@ while True:
         mixer.music.play()
         bird_movement = 0
         bird_movement -= 8
+
+    # score
+    score += 0.01
+    if score == 1:
+        print("trueee asfff")
+    game_font = pygame.font.Font(("04B_19.TTF"), 40)
+    score_surface = game_font.render(str(int(score)), True, (255, 255, 255))
+    score_rect = score_surface.get_rect(center=(175, 40))
+    screen.blit(score_surface, score_rect)
 
     pygame.display.update()
