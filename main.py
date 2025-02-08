@@ -1,6 +1,7 @@
 import sys
 import pygame
 import math
+import random
 from pygame import mixer
 
 # canvas dimensions
@@ -17,6 +18,30 @@ radius = 25
 # init's
 pygame.init()
 mixer.init()
+
+
+# pipe functions
+def create_pipe():
+    random_pipe_pos = random.choice(pipe_height)
+    bottom_pipe = pipe_surface.get_rect(midtop=(450, random_pipe_pos))
+    top_pipe = pipe_surface.get_rect(midbottom=(450, random_pipe_pos - 200))
+    return bottom_pipe, top_pipe
+
+
+def move_pipes(pipes):
+    for pipe in pipes:
+        pipe.centerx -= 5
+    return pipes
+
+
+def draw_pipes(pipes):
+    for pipe in pipes:
+        if pipe.bottom >= 600:
+            screen.blit(pipe_surface, pipe)
+        else:
+            flip_pipe = pygame.transform.flip(pipe_surface, False, True)
+            screen.blit(flip_pipe, pipe)
+
 
 # canvas declaration
 screen = pygame.display.set_mode((screen_width, screen_height))
@@ -37,6 +62,12 @@ bird_rect_up = bird_upflap.get_rect(center=(150, 300))
 bird_rect_down = bird_downflap.get_rect()
 
 # pipe rect
+pipe_surface = pygame.image.load("assets/pipe-green.png")
+pipe_surface = pygame.transform.scale(pipe_surface, (70, 320))
+pipe_list = []
+SPAWNPIPE = pygame.USEREVENT
+pygame.time.set_timer(SPAWNPIPE, 1200)
+pipe_height = [300, 400]
 
 
 # base rects
@@ -78,10 +109,15 @@ while True:
                 isPlaying = False
                 pygame.quit()
                 sys.exit()
+            if event.type == SPAWNPIPE:
+                pipe_list.extend(create_pipe())
 
         # loading the scrolling background
         for i in range(0, tiles_bg + 1):
             screen.blit(bg_day, (i * bg_day_width + scroll, 0))
+
+        draw_pipes(pipe_list)
+
         for i in range(0, tiles_base + 1):
             screen.blit(base, (i * base_width + scroll, 500))
 
@@ -95,12 +131,28 @@ while True:
     bird_movement += gravity
     bird_rect_up.centery += bird_movement
 
+    # pipes
+    pipe_list = move_pipes(pipe_list)
+
+    collided = False
+    for pipe in pipe_list:
+        if bird_rect_up.colliderect(pipe):
+            collided = True
+
+    if collided:
+        mixer.music.load("sound/sfx_die.wav")
+        mixer.music.play()
+        isPlaying = False
+        anotherScreen = True
+
     # score
     if mf_score:
         score += 0.01
         current_score = int(score)
-        game_font = pygame.font.Font(("04B_19.TTF"), 30)
-        score_surface = game_font.render(str(int(score)), True, (255, 255, 255))
+        game_font = pygame.font.Font(("04B_19.TTF"), 20)
+        score_surface = game_font.render(
+            f"score: {str(int(score))}", True, (255, 255, 255)
+        )
         score_rect = score_surface.get_rect(center=(175, 40))
         screen.blit(score_surface, score_rect)
 
@@ -122,7 +174,6 @@ while True:
         gravity = 0.25
         bird_movement = 0
         scroll = 0
-        mixer.music.unload()
         mf_score = False
         # Process window close event
         for event in events:
