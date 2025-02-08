@@ -63,6 +63,9 @@ clock = pygame.time.Clock()
 game_over = pygame.image.load("assets/message.png").convert_alpha()
 game_over_rect = game_over.get_rect(center=(175, 300))
 
+mf_score = True
+
+previous_score = 0
 # game loop
 isPlaying = True
 anotherScreen = False
@@ -92,6 +95,20 @@ while True:
     bird_movement += gravity
     bird_rect_up.centery += bird_movement
 
+    # score
+    if mf_score:
+        score += 0.01
+        current_score = int(score)
+        game_font = pygame.font.Font(("04B_19.TTF"), 30)
+        score_surface = game_font.render(str(int(score)), True, (255, 255, 255))
+        score_rect = score_surface.get_rect(center=(175, 40))
+        screen.blit(score_surface, score_rect)
+
+    if current_score > previous_score:
+        mixer.music.load("sound/sfx_point.wav")
+        mixer.music.play()
+    previous_score = current_score
+
     events = pygame.event.get()
 
     # Check collision and handle death
@@ -102,6 +119,11 @@ while True:
         anotherScreen = True
 
     if anotherScreen:
+        gravity = 0.25
+        bird_movement = 0
+        scroll = 0
+        mixer.music.unload()
+        mf_score = False
         # Process window close event
         for event in events:
             if event.type == pygame.QUIT:
@@ -109,6 +131,7 @@ while True:
                 sys.exit()
 
             if keys[pygame.K_SPACE]:
+                mf_score = True
                 anotherScreen = False
                 isPlaying = True
                 score = 0
@@ -121,18 +144,7 @@ while True:
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
         screen.blit(bird_downflap, bird_rect_up)
-        mixer.music.load("sound/sfx_wing.wav")
-        mixer.music.play()
         bird_movement = 0
         bird_movement -= 8
-
-    # score
-    score += 0.01
-    if score == 1:
-        print("trueee asfff")
-    game_font = pygame.font.Font(("04B_19.TTF"), 40)
-    score_surface = game_font.render(str(int(score)), True, (255, 255, 255))
-    score_rect = score_surface.get_rect(center=(175, 40))
-    screen.blit(score_surface, score_rect)
 
     pygame.display.update()
