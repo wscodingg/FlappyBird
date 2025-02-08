@@ -45,7 +45,7 @@ base_width = base.get_width()
 tiles_base = math.ceil(screen_width / base_width)
 
 # wings sfx
-wings = mixer.music.load("sound/sfx_wing.wav")
+
 mixer.music.set_volume(0.2)
 
 
@@ -88,29 +88,35 @@ while True:
     bird_movement += gravity
     bird_rect_up.centery += bird_movement
 
-    # collide
-    if bird_rect_up.centery >= 600 or bird_rect_up.centery <= 10:
+    events = pygame.event.get()
 
+    # Check collision and handle death
+    if isPlaying and (bird_rect_up.centery >= 600 or bird_rect_up.centery <= 10):
+        mixer.music.load("sound/sfx_die.wav")
+        mixer.music.play()
         isPlaying = False
         anotherScreen = True
 
-    # game restart on pressing space
     if anotherScreen:
-        for event in pygame.event.get():
+        # Process window close event
+        for event in events:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-
+            
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                anotherScreen = False
+                isPlaying = True
+               
+        # Draw game over screen
+        game_over_rect.center = screen.get_rect().center
         screen.blit(game_over, game_over_rect)
-
-        if keys[pygame.K_SPACE]:
-            anotherScreen = False
-            isPlaying = True
 
     # keys operations
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
         screen.blit(bird_downflap, bird_rect_up)
+        mixer.music.load("sound/sfx_wing.wav")
         mixer.music.play()
         bird_movement = 0
         bird_movement -= 8
