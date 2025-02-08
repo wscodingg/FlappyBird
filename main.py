@@ -33,10 +33,11 @@ scroll = 0
 bird_midflap = pygame.image.load("assets/bluebird-midflap.png").convert()
 bird_downflap = pygame.image.load("assets/bluebird-downflap.png").convert()
 bird_upflap = pygame.image.load("assets/bluebird-upflap.png").convert()
-
-
 bird_rect_up = bird_upflap.get_rect(center=(150, 300))
 bird_rect_down = bird_downflap.get_rect()
+
+# pipe rect
+
 
 # base rects
 base = pygame.image.load("assets/base.png")
@@ -53,6 +54,10 @@ gravity = 0.25
 bird_movement = 0
 
 clock = pygame.time.Clock()
+
+# game over
+game_over = pygame.image.load("assets/message.png").convert_alpha()
+game_over_rect = game_over.get_rect(center=(175, 300))
 
 # game loop
 isPlaying = True
@@ -78,26 +83,30 @@ while True:
         bird_rect_up.clamp_ip(screen_rect)
         if abs(scroll) > bg_day_width:
             scroll = 0
-    
-    
-    #gravity
+
+    # gravity
     bird_movement += gravity
     bird_rect_up.centery += bird_movement
 
-    
+    # collide
+    if bird_rect_up.centery >= 600 or bird_rect_up.centery <= 10:
 
-
-    #collide
-    if bird_rect_up.centery >= 600 or bird_rect_up.centery <=10:
-        isPlaying=False
+        isPlaying = False
         anotherScreen = True
-        
-    
-    
+
+    # game restart on pressing space
     if anotherScreen:
-        print("another screen")
-            
-        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        screen.blit(game_over, game_over_rect)
+
+        if keys[pygame.K_SPACE]:
+            anotherScreen = False
+            isPlaying = True
+
     # keys operations
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
