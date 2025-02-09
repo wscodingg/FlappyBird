@@ -29,6 +29,12 @@ $ git clone https://github.com/y0inkk/FlappyBird.git
 $ cd FlappyBird
 ```
 
+<br/>
+
+## 📜 Instructions
+
+- press w to move the bird up
+- press space to restart the game after game over
 
 <br/>
 
