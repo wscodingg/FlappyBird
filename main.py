@@ -48,6 +48,7 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 screen_rect = screen.get_rect()
 pygame.display.set_caption("Flappy Bird")
 
+
 # background rect
 bg_day = pygame.image.load("assets/background-day.png")
 bg_day_width = bg_day.get_width()
@@ -96,6 +97,10 @@ game_over_rect = game_over.get_rect(center=(175, 300))
 
 mf_score = True
 
+#collision sound
+count = 0
+
+
 previous_score = 0
 # game loop
 isPlaying = True
@@ -137,11 +142,13 @@ while True:
     collided = False
     for pipe in pipe_list:
         if bird_rect_up.colliderect(pipe):
+            mixer.music.load("sound/sfx_die.wav")
+            mixer.music.play()
+            count += 1
             collided = True
 
-    if collided:
-        mixer.music.load("sound/sfx_die.wav")
-        mixer.music.play()
+    if isPlaying and collided:
+        count += 1
         isPlaying = False
         anotherScreen = True
 
