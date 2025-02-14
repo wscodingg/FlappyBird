@@ -23,7 +23,7 @@ py -m pip-install pygame
 
 - Clone the repository:  
 ```
-$ git clone https://github.com/y0inkk/FlappyBird.git
+$ git clone https://github.com/wscodingg/FlappyBird.git
 ```
 ```
 $ cd FlappyBird
